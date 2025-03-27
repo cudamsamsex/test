@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Viewer</title>
+    <style>
+        body {
+            display: flex;
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+        .sidebar {
+            width: 200px;
+            background: #333;
+            color: white;
+            padding: 20px;
+            height: 100vh;
+        }
+        .sidebar a {
+            display: block;
+            color: white;
+            padding: 10px;
+            text-decoration: none;
+        }
+        .sidebar a:hover {
+            background: #555;
+        }
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+            overflow: auto;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <a href="#" onclick="loadContent('2fa.html')">2Fa.City</a>
+        <a href="#" onclick="loadContent('netflix.html')">Netflix</a>
+        <a href="#" onclick="loadContent('method.html')">Method</a>
+    </div>
+    <div class="content">
+        <pre id="codeDisplay">Chọn một mục để xem mã nguồn...</pre>
+    </div>
+    <script>
+        function loadContent(file) {
+            fetch(file)
+                .then(response => response.text())
+                .then(text => {
+                    document.getElementById('codeDisplay').textContent = text;
+                })
+                .catch(err => {
+                    document.getElementById('codeDisplay').textContent = "Không thể tải nội dung.";
+                });
+        }
+    </script>
+</body>
+</html>
