@@ -1,309 +1,161 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Netflix Account Share</title>
-        <!-- Thêm favicon -->
-        <link rel="icon" href="favicon.ico" type="image/x-icon">
-        <style>
-            /* Your existing styles */
-            body {
-                font-family: 'Roboto', sans-serif;
-                background: url('https://i.imgur.com/7syXYAp.jpeg') no-repeat center center fixed;
-                background-size: cover;
-                height: 100vh;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                color: white;
-                overflow: hidden;
-                transition: background 0.5s ease;
+<head>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2FA Code Time</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { theme: { extend: {} } };
+    </script>
+</head>
+<body class="bg-gray-100 flex justify-center items-center h-screen transition-colors duration-300">
+
+    <div id="container" class="bg-white p-8 rounded-lg shadow-lg w-[600px] text-center relative transition-colors duration-300">
+        <button id="darkModeToggle" class="absolute top-2 right-2 bg-gray-200 text-black px-4 py-2 rounded hover:bg-gray-300 text-lg">🌙</button>
+        <h1 id="title" class="text-4xl font-bold text-gray-800 mb-6 transition-colors duration-300">2FA Code Time</h1>
+        <input type="text" id="secretKey" class="w-full p-3 border rounded mb-5 text-center text-lg text-gray-800 bg-white transition-colors duration-300" placeholder="Enter Secret Key" />
+        <h2 id="otpCode" class="text-4xl font-bold text-green-600 mb-3">------</h2>
+        <p id="countdown" class="text-gray-600 mb-5 transition-colors duration-300 text-lg">Next code in: -- sec</p>
+        <button id="copyBtn" onclick="copyOTP()" class="bg-blue-500 text-white px-5 py-3 rounded w-full hover:bg-blue-600 text-lg" disabled>
+            Copy Code
+        </button>
+    </div>
+
+    <script>
+        let interval;
+
+        function applyDarkMode(isDark) {
+            document.body.classList.toggle("bg-gray-900", isDark);
+            document.getElementById("container").classList.toggle("bg-gray-800", isDark);
+            document.getElementById("title").classList.toggle("text-white", isDark);
+            document.getElementById("countdown").classList.toggle("text-gray-400", isDark);
+            document.getElementById("secretKey").classList.toggle("bg-gray-700", isDark);
+            document.getElementById("secretKey").classList.toggle("text-white", isDark);
+            document.getElementById("darkModeToggle").innerText = isDark ? "☀️" : "🌙";
+        }
+
+        function toggleDarkMode() {
+            const isDark = !JSON.parse(localStorage.getItem("darkMode") || "false");
+            localStorage.setItem("darkMode", isDark);
+            applyDarkMode(isDark);
+        }
+
+        document.getElementById("darkModeToggle").addEventListener("click", toggleDarkMode);
+        applyDarkMode(JSON.parse(localStorage.getItem("darkMode") || "false"));
+
+        document.getElementById("secretKey").addEventListener("input", () => {
+            let secret = document.getElementById("secretKey").value.trim().replace(/\s+/g, "").toUpperCase();
+            if (interval) clearInterval(interval);
+            updateOTP(secret);
+            interval = setInterval(() => updateOTP(secret), 1000);
+        });
+
+        async function generateTOTP(secret) {
+            const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+            let bits = "", bytes = [];
+            for (let char of secret) {
+                let val = alphabet.indexOf(char);
+                if (val === -1) continue;
+                bits += val.toString(2).padStart(5, "0");
             }
-
-            .login-container, .content-container {
-                background: rgba(0, 0, 0, 0.6);
-                padding: 40px;
-                border-radius: 15px;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
-                text-align: center;
-                color: white;
-                transform: translateY(-50px);
-                animation: slideIn 1s forwards;
+            for (let i = 0; i + 8 <= bits.length; i += 8) {
+                bytes.push(parseInt(bits.substring(i, i + 8), 2));
             }
-
-            .login-container { 
-                width: 400px;
-                backdrop-filter: blur(5px);
+            let keyBytes = new Uint8Array(bytes);
+            let epoch = Math.floor(Date.now() / 1000);
+            let time = Math.floor(epoch / 30);
+            let timeBuffer = new ArrayBuffer(8);
+            let timeView = new DataView(timeBuffer);
+            for (let i = 7; i >= 0; i--) {
+                timeView.setUint8(i, time & 0xff);
+                time >>= 8;
             }
+            let cryptoKey = await window.crypto.subtle.importKey("raw", keyBytes, { name: "HMAC", hash: "SHA-1" }, false, ["sign"]);
+            let hmac = new Uint8Array(await window.crypto.subtle.sign("HMAC", cryptoKey, timeBuffer));
+            let offset = hmac[hmac.length - 1] & 0x0f;
+            let otp = ((hmac[offset] & 0x7f) << 24 |
+                    (hmac[offset + 1] & 0xff) << 16 |
+                    (hmac[offset + 2] & 0xff) << 8 |
+                    (hmac[offset + 3] & 0xff)) % 1000000;
+            return otp.toString().padStart(6, "0");
+        }
 
-            .content-container {
-                width: 850px;
-                padding: 40px;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
+        async function updateOTP(secret) {
+            try {
+                const otp = await generateTOTP(secret);
+                document.getElementById("otpCode").innerText = otp;
+                document.getElementById("otpCode").classList.remove("text-red-500");
+                document.getElementById("copyBtn").disabled = false;
+                updateCountdown();
+            } catch (error) {
+                document.getElementById("otpCode").innerText = "------";
+                document.getElementById("copyBtn").disabled = true;
+                clearInterval(interval);
             }
+        }
 
-            .user-image {
-                width: 120px;
-                height: 120px;
-                border-radius: 50%;
-                margin-bottom: 20px;
-                box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
-                transition: transform 0.3s ease;
-            }
+        function updateCountdown() {
+            const timeRemaining = 30 - (Math.floor(Date.now() / 1000) % 30);
+            document.getElementById("countdown").innerText = "Next code in: " + timeRemaining + " sec";
+        }
 
-            .user-image:hover {
-                transform: scale(1.1);
-            }
-
-            h2 {
-                font-family: 'Comic Sans MS', cursive, sans-serif;
-                color: #ff7f50;
-                margin-bottom: 20px;
-                font-size: 28px;
-                text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
-            }
-
-            input, button {
-                margin: 10px 0;
-                padding: 15px;
-                border: none;
-                border-radius: 10px;
-                width: 80%;
-                font-size: 16px;
-                transition: background-color 0.3s;
-            }
-
-            input {
-                background: rgba(255, 255, 255, 0.2);
-                color: white;
-                border: 2px solid #ff7f50;
-            }
-
-            input:focus {
-                background: rgba(255, 255, 255, 0.3);
-            }
-
-            button {
-                background: #ff7f50;
-                color: white;
-                cursor: pointer;
-                border: 2px solid #ff7f50;
-                font-weight: bold;
-            }
-
-            button:hover {
-                background: #ff6347;
-                border-color: #ff6347;
-            }
-
-            .toast-container {
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .toast {
-                background: rgba(255, 99, 71, 0.9);
-                color: white;
-                padding: 12px 18px;
-                border-radius: 12px;
-                opacity: 0;
-                transform: translateY(-10px);
-                transition: opacity 0.3s, transform 0.3s;
-            }
-
-            .toast.show {
-                opacity: 1;
-                transform: translateY(0);
-            }
-
-            @keyframes slideIn {
-                0% {
-                    transform: translateY(-50px);
-                    opacity: 0;
-                }
-                100% {
-                    transform: translateY(0);
-                    opacity: 1;
-                }
-            }
-
-            /* Ẩn phần content khi chưa đăng nhập */
-            .hidden {
-                display: none;
-            }
-
-            /* Resize the logout button */
-            .logout-button {
-                padding: 10px 20px;
-                font-size: 14px;
-                width: auto;
-                cursor: pointer;
-            }
-
-            /* Style for the eye icon */
-            .eye-icon {
-                cursor: pointer;
-                position: absolute;
-                right: 35px;  /* Adjusted right position to avoid overlapping */
-                top: 50%;  /* Vertically center the icon */
-                transform: translateY(-50%);  /* Fine-tune centering */
-                color: white;
-            }
-
-            /* New CSS for the copy button */
-            .copy-btn {
-                padding: 5px;
-                font-size: 20px;
-                background: none;
-                border: none;
-                color: #ff7f50;
-                cursor: pointer;
-                transition: transform 0.3s ease;
-            }
-
-            .copy-btn:hover {
-                transform: scale(1.2);  /* Tăng kích thước biểu tượng khi hover */
-            }
-
-        </style>
-    </head>
-    <body>
-        <!-- Khung đăng nhập -->
-        <div class="login-container" id="login-box">
-            <img src="https://i.pinimg.com/originals/d2/a8/47/d2a84760f77dfe1ab7903615f4523a71.gif" alt="User Avatar" class="user-image"> <!-- Ảnh người dùng -->
-            <h2>Login Account:</h2>
-            <input type="text" id="username" placeholder="Username"><br>
-            <div style="position: relative;">
-                <input type="password" id="password" placeholder="Password"><br>
-                <span class="eye-icon" onclick="togglePasswordVisibility()">👁️</span>
-            </div>
-            <button onclick="login()">Login</button>
-            <p id="error" style="color: red; display: none;">Incorrect username or password!</p>
-        </div>
-        
-        <!-- Nội dung Netflix Account Share, sẽ ẩn cho đến khi đăng nhập -->
-        <div class="content-container hidden" id="content-box">
-            <h2>Netflix Account Share</h2>
-            <table>
-                <tr>
-                    <th>Account</th>
-                    <th>Password</th>
-                </tr>
-                <tr>
-                    <td>lifexyz2468@gmail.com <button class="copy-btn" onclick="copyText('lifexyz2468@gmail.com')">📋</button></td>
-                    <td>25542409 <button class="copy-btn" onclick="copyText('25542409')">📋</button></td>
-                </tr>
-                <tr>
-                    <th>Profile</th>
-                    <th>PIN</th>
-                </tr>
-                <tr>
-                    <td>Profile 1</td>
-                    <td>1111 <button class="copy-btn" onclick="copyText('1111')">📋</button></td>
-                </tr>
-                <tr>
-                    <td>Profile 2</td>
-                    <td>0202 <button class="copy-btn" onclick="copyText('0202')">📋</button></td>
-                </tr>
-                <tr>
-                    <td>Profile 3</td>
-                    <td>1357 <button class="copy-btn" onclick="copyText('1357')">📋</button></td>
-                </tr>
-                <tr>
-                    <td>Profile 4</td>
-                    <td>4488 <button class="copy-btn" onclick="copyText('4488')">📋</button></td>
-                </tr>
-                <tr>
-                    <td>Profile 5</td>
-                    <td>0055 <button class="copy-btn" onclick="copyText('0055')">📋</button></td>
-                </tr>
-            </table>
-            <button class="logout-button" onclick="logout()">Logout</button>
-        </div>
-        
-        <!-- Toast thông báo -->
-        <div class="toast-container" id="toast-container"></div>
-
-        <script>
-            // Toggle password visibility
-            function togglePasswordVisibility() {
-                const passwordField = document.getElementById('password');
-                const passwordFieldType = passwordField.type;
-                passwordField.type = passwordFieldType === 'password' ? 'text' : 'password';
-            }
-
-            // Đảm bảo ẩn content khi chưa đăng nhập
-            document.addEventListener("DOMContentLoaded", function() {
-                if (localStorage.getItem('loggedIn') !== 'true') {
-                    document.getElementById('content-box').classList.add('hidden');
-                    document.getElementById('login-box').classList.remove('hidden');
-                } else {
-                    document.getElementById('content-box').classList.remove('hidden');
-                    document.getElementById('login-box').classList.add('hidden');
-                    // Change background after login
-                    document.body.style.background = 'url("https://i.imgur.com/bhiplWD.jpeg") no-repeat center center fixed';
-                    document.body.style.backgroundSize = 'cover';
-                }
-            });
-
-            // Chức năng đăng nhập
-            function login() {
-                const user = document.getElementById('username').value.trim();
-                const pass = document.getElementById('password').value.trim();
-                if (user === 'nadeptrai' && pass === 'nadeptrai') {
-                    localStorage.setItem('loggedIn', 'true');
-                    showContent();
-                } else {
-                    document.getElementById('error').style.display = 'block';
-                }
-            }
-
-            // Chức năng đăng xuất
-            function logout() {
-                localStorage.removeItem('loggedIn');
-                document.getElementById('content-box').classList.add('hidden');
-                document.getElementById('login-box').classList.remove('hidden');
-                // Revert the background to login background
-                document.body.style.background = 'url("https://i.imgur.com/7syXYAp.jpeg") no-repeat center center fixed';
-                document.body.style.backgroundSize = 'cover';
-            }
-
-            // Hiển thị nội dung sau khi đăng nhập
-            function showContent() {
-                document.getElementById('login-box').classList.add('hidden');
-                document.getElementById('content-box').classList.remove('hidden');
-                // Change background after login
-                document.body.style.background = 'url("https://i.imgur.com/bhiplWD.jpeg") no-repeat center center fixed';
-                document.body.style.backgroundSize = 'cover';
-            }
-
-            // Chức năng sao chép
-            function copyText(text) {
-                navigator.clipboard.writeText(text).then(() => {
-                    showToast(`Copied: ${text}`);
+        function copyOTP() {
+            const otpText = document.getElementById("otpCode").innerText.trim();
+            if (otpText && otpText !== "------") {
+                navigator.clipboard.writeText(otpText).then(() => {
+                    showToast("Code Copy Successfully!");
+                }).catch(() => {
+                    showToast("Failed to copy Code!", true);
                 });
+            } else {
+                showToast("No Code available to copy!", true);
             }
+        }
 
-            // Hiển thị thông báo Toast
-            function showToast(message) {
-                const toastContainer = document.getElementById('toast-container');
-                const toast = document.createElement('div');
-                toast.className = 'toast show';
-                toast.textContent = message;
-                toastContainer.prepend(toast);
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                    setTimeout(() => toast.remove(), 500);
-                }, 5000);
-            }
-        </script>
-    </body>
+       // HIỆU ỨNG TRƯỢT CỦA THANH THÔNG BÁO
+function showToast(message, isError = false) {
+    let toastContainer = document.getElementById("toastContainer");
+
+    if (!toastContainer) {
+        toastContainer = document.createElement("div");
+        toastContainer.id = "toastContainer";
+        toastContainer.style.position = "fixed";
+        toastContainer.style.top = "20px";
+        toastContainer.style.right = "20px";
+        toastContainer.style.display = "flex";
+        toastContainer.style.flexDirection = "column";
+        toastContainer.style.gap = "10px"; // Tạo khoảng cách giữa các thông báo
+        toastContainer.style.zIndex = "1000";
+        document.body.appendChild(toastContainer);
+    }
+
+    const toast = document.createElement("div");
+    toast.innerText = message;
+    toast.style.backgroundColor = isError ? "#e53e3e" : "#48bb78";
+    toast.style.color = "#fff";
+    toast.style.padding = "10px 20px";
+    toast.style.borderRadius = "5px";
+    toast.style.fontSize = "16px";
+    toast.style.position = "relative";
+    toast.style.right = "-100%";
+    toast.style.opacity = "0";
+    toast.style.transition = "right 0.5s ease-out, opacity 0.5s ease-out";
+
+    toastContainer.prepend(toast);
+
+    setTimeout(() => {
+        toast.style.right = "0";
+        toast.style.opacity = "1";
+    }, 50);
+
+    setTimeout(() => {
+        toast.style.right = "-100%";
+        toast.style.opacity = "0";
+        setTimeout(() => toast.remove(), 500);
+    }, 3000);
+}
+    </script>
+</body>
 </html>
