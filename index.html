@@ -28,14 +28,13 @@
         }
         .content {
             flex-grow: 1;
-            padding: 20px;
-            overflow: auto;
+            padding: 0;
+            overflow: hidden;
         }
-        pre {
-            background: #f4f4f4;
-            padding: 10px;
-            border-radius: 5px;
-            white-space: pre-wrap;
+        iframe {
+            width: 100%;
+            height: 100vh;
+            border: none;
         }
     </style>
 </head>
@@ -46,18 +45,11 @@
         <a href="#" onclick="loadContent('method.html')">Method</a>
     </div>
     <div class="content">
-        <pre id="codeDisplay">Chọn một mục để xem mã nguồn...</pre>
+        <iframe id="contentFrame" src=""></iframe>
     </div>
     <script>
         function loadContent(file) {
-            fetch(file)
-                .then(response => response.text())
-                .then(text => {
-                    document.getElementById('codeDisplay').textContent = text;
-                })
-                .catch(err => {
-                    document.getElementById('codeDisplay').textContent = "Không thể tải nội dung.";
-                });
+            document.getElementById('contentFrame').src = file;
         }
     </script>
 </body>
