@@ -7,27 +7,26 @@
     <style>
         body {
             display: flex;
+            flex-direction: column;
             font-family: Arial, sans-serif;
             margin: 0;
-            flex-direction: column;
         }
         .sidebar {
-            width: 220px;
+            width: 100%;
             background: linear-gradient(135deg, #1e3c72, #2a5298);
             color: white;
-            padding: 20px;
-            height: 100vh;
-            box-shadow: 4px 0 10px rgba(0, 0, 0, 0.2);
+            padding: 10px 0;
+            display: flex;
+            justify-content: space-around;
             position: fixed;
-            left: 0;
             top: 0;
-            overflow-y: auto;
+            left: 0;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
         }
         .sidebar a {
-            display: block;
             color: white;
             padding: 15px;
-            margin: 10px 0;
             text-decoration: none;
             font-size: 18px;
             font-weight: bold;
@@ -39,36 +38,20 @@
             transform: scale(1.05);
         }
         .content {
+            margin-top: 60px;
             flex-grow: 1;
             padding: 0;
             overflow: hidden;
-            margin-left: 220px;
         }
         iframe {
             width: 100%;
-            height: 100vh;
+            height: calc(100vh - 60px);
             border: none;
         }
         @media (max-width: 768px) {
-            body {
-                flex-direction: column;
-            }
-            .sidebar {
-                width: 100%;
-                height: auto;
-                position: relative;
-                display: flex;
-                justify-content: space-around;
-                padding: 10px 0;
-            }
             .sidebar a {
                 padding: 10px;
                 font-size: 16px;
-                margin: 0;
-            }
-            .content {
-                margin-left: 0;
-                margin-top: 10px;
             }
         }
     </style>
