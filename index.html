@@ -9,7 +9,6 @@
             display: flex;
             font-family: Arial, sans-serif;
             margin: 0;
-            flex-direction: column;
         }
         .sidebar {
             width: 220px;
@@ -18,10 +17,6 @@
             padding: 20px;
             height: 100vh;
             box-shadow: 4px 0 10px rgba(0, 0, 0, 0.2);
-            position: fixed;
-            left: 0;
-            top: 0;
-            overflow-y: auto;
         }
         .sidebar a {
             display: block;
@@ -42,41 +37,26 @@
             flex-grow: 1;
             padding: 0;
             overflow: hidden;
-            margin-left: 220px;
         }
         iframe {
             width: 100%;
             height: 100vh;
             border: none;
         }
-        @media (max-width: 768px) {
-            body {
-                flex-direction: column;
-            }
-            .sidebar {
-                width: 100%;
-                height: auto;
-                position: relative;
-                display: flex;
-                justify-content: space-around;
-                padding: 10px 0;
-            }
-            .sidebar a {
-                padding: 10px;
-                font-size: 16px;
-                margin: 0;
-            }
-            .content {
-                margin-left: 0;
-                margin-top: 10px;
-            }
+        .icon {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+            margin-right: 10px;
         }
     </style>
 </head>
 <body>
     <div class="sidebar">
         <a href="#" onclick="loadContent('2fa.html')">🔐 2Fa.City</a>
-        <a href="#" onclick="loadContent('netflix.html')">🎬 Netflix</a>
+        <a href="#" onclick="loadContent('netflix.html')">
+            <img src="https://foxads365.com/assets/storage/images/categoryYSW.png" class="icon" alt="Netflix Icon"> Netflix
+        </a>
         <a href="#" onclick="loadContent('method.html')">📜 Method</a>
     </div>
     <div class="content">
