@@ -246,4 +246,22 @@
 
         // Hiển thị thông báo Toast
         function showToast(message) {
-            const toastContainer
+            const toastContainer = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast show';
+            toast.textContent = message;
+            toastContainer.prepend(toast);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 500);
+            }, 5000);
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('loggedIn');
+            window.location.reload();
+        }
+    </script>
+</body>
+</html>
