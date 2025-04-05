@@ -1,7 +1,7 @@
 // api/login.js
 const accounts = {
     admin: {
-        password: "phanhoangna",
+        password: "phanhoangna",  // Đổi mật khẩu theo yêu cầu của bạn
         netflixAccount: {
             username: "netflixuser",
             password: "netflixpass",
