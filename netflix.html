@@ -230,25 +230,30 @@
         <script>
             // Chức năng đăng nhập
             function verify2FA() {
-    const twofaCode = document.getElementById('twofaCode').value.trim();  // Lấy mã người dùng nhập vào
-    fetch('http://localhost:3000/verify-2fa', {  // Gửi mã đến backend
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ code: twofaCode })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {  // Nếu mã đúng, cho phép đăng nhập
-            localStorage.setItem('loggedIn', 'true');
-            showContent();
-        } else {
-            document.getElementById('error').style.display = 'block';  // Hiển thị lỗi nếu mã không đúng
-        }
-    })
-    .catch(error => console.error('Error:', error));
-}
+                const twofaCode = document.getElementById('twofaCode').value.trim();
+
+                // Gửi yêu cầu xác thực mã 2FA tới server
+                fetch('https://your-server-url.com/verify-2fa', {  // Cập nhật URL server của bạn
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ code: twofaCode })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message === '2FA code is valid') {
+                        localStorage.setItem('loggedIn', 'true');
+                        showContent();
+                    } else {
+                        document.getElementById('error').style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+
             // Chức năng đăng xuất
             function logout() {
                 localStorage.removeItem('loggedIn');
@@ -257,7 +262,7 @@
                 document.body.style.background = 'url("https://i.imgur.com/7syXYAp.jpeg") no-repeat center center fixed';
                 document.body.style.backgroundSize = 'cover';
             }
-        
+
             // Hiển thị nội dung sau khi đăng nhập
             function showContent() {
                 document.getElementById('login-box').classList.add('hidden');
@@ -265,14 +270,14 @@
                 document.body.style.background = 'url("https://i.imgur.com/bhiplWD.jpeg") no-repeat center center fixed';
                 document.body.style.backgroundSize = 'cover';
             }
-        
+
             // Chức năng sao chép
             function copyText(text) {
                 navigator.clipboard.writeText(text).then(() => {
                     showToast(`Copied: ${text}`);
                 });
             }
-        
+
             // Hiển thị thông báo Toast
             function showToast(message) {
                 const toastContainer = document.getElementById('toast-container');
@@ -285,6 +290,6 @@
                     setTimeout(() => toast.remove(), 500);
                 }, 5000);
             }
-        </script>        
+        </script>
     </body>
 </html>
