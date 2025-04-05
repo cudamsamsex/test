@@ -1,8 +1,13 @@
 {
-  "functions": {
-    "api/get-account.js": {
-      "memory": 128,
-      "maxDuration": 10
+  "version": 2,
+  "builds": [
+    {
+      "src": "netflix.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "api/login.js",
+      "use": "@vercel/node"
     }
-  }
+  ]
 }
