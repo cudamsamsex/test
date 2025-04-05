@@ -3,6 +3,9 @@ const speakeasy = require('speakeasy');
 exports.handler = async (event, context) => {
     const { code } = JSON.parse(event.body);
 
+    // Log đầu vào
+    console.log("Nhận mã 2FA: ", code);
+
     // Khóa bí mật 2FA của bạn (Đã được chia sẻ cho gia đình)
     const secret = 'GED22WQXSMETG4WETQNXBSZZJCSWFNGV'; // Khóa 2FA của bạn
 
@@ -12,6 +15,9 @@ exports.handler = async (event, context) => {
         encoding: 'base32',
         token: code
     });
+
+    // Log kết quả kiểm tra
+    console.log("Mã 2FA hợp lệ: ", isValid);
 
     if (isValid) {
         return {
