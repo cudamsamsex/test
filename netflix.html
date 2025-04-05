@@ -231,7 +231,7 @@
             // Chức năng đăng nhập
             function verify2FA() {
     const twofaCode = document.getElementById('twofaCode').value.trim();  // Lấy mã người dùng nhập vào
-    fetch('/verify-2fa', {  // Gửi mã tới server để kiểm tra
+    fetch('http://localhost:3000/verify-2fa', {  // Gửi mã đến backend
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -249,8 +249,6 @@
     })
     .catch(error => console.error('Error:', error));
 }
-
-        
             // Chức năng đăng xuất
             function logout() {
                 localStorage.removeItem('loggedIn');
