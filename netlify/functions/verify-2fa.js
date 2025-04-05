@@ -1,7 +1,7 @@
 const speakeasy = require('speakeasy');
 
 exports.handler = async (event, context) => {
-    const { key, code } = JSON.parse(event.body);
+    const { code } = JSON.parse(event.body);
 
     // Khóa bí mật 2FA của bạn (Đã được chia sẻ cho gia đình)
     const secret = 'GED22WQXSMETG4WETQNXBSZZJCSWFNGV'; // Khóa 2FA của bạn
