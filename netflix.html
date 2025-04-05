@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,7 +6,7 @@
     <title>Netflix Account Share</title>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <style>
-        /* Your existing styles */
+        /* Các style của bạn */
         body {
             font-family: 'Roboto', sans-serif;
             background: url('https://i.imgur.com/7syXYAp.jpeg') no-repeat center center fixed;
@@ -138,40 +138,6 @@
         .hidden {
             display: none;
         }
-
-        /* Resize the logout button */
-        .logout-button {
-            padding: 10px 20px;
-            font-size: 14px;
-            width: auto;
-            cursor: pointer;
-        }
-
-        /* Style for the eye icon */
-        .eye-icon {
-            cursor: pointer;
-            position: absolute;
-            right: 35px;  /* Adjusted right position to avoid overlapping */
-            top: 50%;  /* Vertically center the icon */
-            transform: translateY(-50%);  /* Fine-tune centering */
-            color: white;
-        }
-
-        /* New CSS for the copy button */
-        .copy-btn {
-            padding: 5px;
-            font-size: 20px;
-            background: none;
-            border: none;
-            color: #ff7f50;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-        }
-
-        .copy-btn:hover {
-            transform: scale(1.2);  /* Tăng kích thước biểu tượng khi hover */
-        }
-
     </style>
 </head>
 <body>
@@ -228,57 +194,56 @@
     <div class="toast-container" id="toast-container"></div>
 
     <script>
-        <script>
-    // Chức năng xác thực 2FA
-    function verify2FA() {
-        const twofaCode = document.getElementById('twofaCode').value.trim();
+        // Chức năng xác thực 2FA
+        function verify2FA() {
+            const twofaCode = document.getElementById('twofaCode').value.trim();
 
-        // Gửi yêu cầu đến API xác thực mã 2FA
-        fetch(`/api/authenticate?token=${twofaCode}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Mã 2FA hợp lệ, thực hiện đăng nhập
-                    localStorage.setItem('loggedIn', 'true');
-                    showContent();
-                } else {
-                    // Mã 2FA không hợp lệ
+            // Kiểm tra nếu mã 2FA trống
+            if (!twofaCode) {
+                alert('Please enter the 2FA code');
+                return;
+            }
+
+            // Gửi yêu cầu đến API xác thực mã 2FA
+            fetch(`/api/authenticate?token=${twofaCode}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('API request failed');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        // Mã 2FA hợp lệ, thực hiện đăng nhập
+                        localStorage.setItem('loggedIn', 'true');
+                        showContent();
+                    } else {
+                        // Mã 2FA không hợp lệ
+                        document.getElementById('error').style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error during 2FA verification:', error);
+                    alert('An error occurred. Please try again.');
                     document.getElementById('error').style.display = 'block';
-                }
-            })
-            .catch(error => {
-                console.error('Error during 2FA verification:', error);
-                document.getElementById('error').style.display = 'block';
+                });
+        }
+
+        // Hiển thị nội dung sau khi đăng nhập thành công
+        function showContent() {
+            document.getElementById('login-box').classList.add('hidden');
+            document.getElementById('content-box').classList.remove('hidden');
+            document.body.style.background = 'url("https://i.imgur.com/bhiplWD.jpeg") no-repeat center center fixed';
+            document.body.style.backgroundSize = 'cover';
+        }
+
+        // Chức năng sao chép thông tin
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast(`Copied: ${text}`);
             });
-    }
+        }
 
-    // Hiển thị nội dung sau khi đăng nhập thành công
-    function showContent() {
-        document.getElementById('login-box').classList.add('hidden');
-        document.getElementById('content-box').classList.remove('hidden');
-        document.body.style.background = 'url("https://i.imgur.com/bhiplWD.jpeg") no-repeat center center fixed';
-        document.body.style.backgroundSize = 'cover';
-    }
-
-    // Chức năng sao chép thông tin
-    function copyText(text) {
-        navigator.clipboard.writeText(text).then(() => {
-            showToast(`Copied: ${text}`);
-        });
-    }
-
-    // Hiển thị thông báo Toast
-    function showToast(message) {
-        const toastContainer = document.getElementById('toast-container');
-        const toast = document.createElement('div');
-        toast.className = 'toast show';
-        toast.textContent = message;
-        toastContainer.prepend(toast);
-        setTimeout(() => {
-            toast.classList.remove('show');
-            setTimeout(() => toast.remove(), 500);
-        }, 5000);
-    }
-</script>
-</body>
-</html>
+        // Hiển thị thông báo Toast
+        function showToast(message) {
+            const toastContainer
