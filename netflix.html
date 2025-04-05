@@ -1,295 +1,304 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Netflix Account Share</title>
-        <link rel="icon" href="favicon.ico" type="image/x-icon">
-        <style>
-            /* Your existing styles */
-            body {
-                font-family: 'Roboto', sans-serif;
-                background: url('https://i.imgur.com/7syXYAp.jpeg') no-repeat center center fixed;
-                background-size: cover;
-                height: 100vh;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                color: white;
-                overflow: hidden;
-                transition: background 0.5s ease;
-            }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netflix Account Share</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <style>
+        /* Your existing styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: url('https://i.imgur.com/7syXYAp.jpeg') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            overflow: hidden;
+            transition: background 0.5s ease;
+        }
 
-            .login-container, .content-container {
-                background: rgba(0, 0, 0, 0.6);
-                padding: 40px;
-                border-radius: 15px;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
-                text-align: center;
-                color: white;
+        .login-container, .content-container {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+            text-align: center;
+            color: white;
+            transform: translateY(-50px);
+            animation: slideIn 1s forwards;
+        }
+
+        .login-container { 
+            width: 400px;
+            backdrop-filter: blur(5px);
+        }
+
+        .content-container {
+            width: 850px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin-bottom: 20px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+            transition: transform 0.3s ease;
+        }
+
+        .user-image:hover {
+            transform: scale(1.1);
+        }
+
+        h2 {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            color: #ff7f50;
+            margin-bottom: 20px;
+            font-size: 28px;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+        }
+
+        input, button {
+            margin: 10px 0;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            width: 80%;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        input {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid #ff7f50;
+        }
+
+        input:focus {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        button {
+            background: #ff7f50;
+            color: white;
+            cursor: pointer;
+            border: 2px solid #ff7f50;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #ff6347;
+            border-color: #ff6347;
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: rgba(255, 99, 71, 0.9);
+            color: white;
+            padding: 12px 18px;
+            border-radius: 12px;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s, transform 0.3s;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @keyframes slideIn {
+            0% {
                 transform: translateY(-50px);
-                animation: slideIn 1s forwards;
-            }
-
-            .login-container { 
-                width: 400px;
-                backdrop-filter: blur(5px);
-            }
-
-            .content-container {
-                width: 850px;
-                padding: 40px;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-            }
-
-            .user-image {
-                width: 120px;
-                height: 120px;
-                border-radius: 50%;
-                margin-bottom: 20px;
-                box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
-                transition: transform 0.3s ease;
-            }
-
-            .user-image:hover {
-                transform: scale(1.1);
-            }
-
-            h2 {
-                font-family: 'Comic Sans MS', cursive, sans-serif;
-                color: #ff7f50;
-                margin-bottom: 20px;
-                font-size: 28px;
-                text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
-            }
-
-            input, button {
-                margin: 10px 0;
-                padding: 15px;
-                border: none;
-                border-radius: 10px;
-                width: 80%;
-                font-size: 16px;
-                transition: background-color 0.3s;
-            }
-
-            input {
-                background: rgba(255, 255, 255, 0.2);
-                color: white;
-                border: 2px solid #ff7f50;
-            }
-
-            input:focus {
-                background: rgba(255, 255, 255, 0.3);
-            }
-
-            button {
-                background: #ff7f50;
-                color: white;
-                cursor: pointer;
-                border: 2px solid #ff7f50;
-                font-weight: bold;
-            }
-
-            button:hover {
-                background: #ff6347;
-                border-color: #ff6347;
-            }
-
-            .toast-container {
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .toast {
-                background: rgba(255, 99, 71, 0.9);
-                color: white;
-                padding: 12px 18px;
-                border-radius: 12px;
                 opacity: 0;
-                transform: translateY(-10px);
-                transition: opacity 0.3s, transform 0.3s;
             }
-
-            .toast.show {
-                opacity: 1;
+            100% {
                 transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Ẩn phần content khi chưa đăng nhập */
+        .hidden {
+            display: none;
+        }
+
+        /* Resize the logout button */
+        .logout-button {
+            padding: 10px 20px;
+            font-size: 14px;
+            width: auto;
+            cursor: pointer;
+        }
+
+        /* Style for the eye icon */
+        .eye-icon {
+            cursor: pointer;
+            position: absolute;
+            right: 35px;  /* Adjusted right position to avoid overlapping */
+            top: 50%;  /* Vertically center the icon */
+            transform: translateY(-50%);  /* Fine-tune centering */
+            color: white;
+        }
+
+        /* New CSS for the copy button */
+        .copy-btn {
+            padding: 5px;
+            font-size: 20px;
+            background: none;
+            border: none;
+            color: #ff7f50;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            transform: scale(1.2);  /* Tăng kích thước biểu tượng khi hover */
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Khung đăng nhập -->
+    <div class="login-container" id="login-box">
+        <img src="https://i.pinimg.com/originals/d2/a8/47/d2a84760f77dfe1ab7903615f4523a71.gif" alt="User Avatar" class="user-image"> <!-- Ảnh người dùng -->
+        <h2>Enter 2FA Code:</h2>
+        <input type="text" id="twofaCode" placeholder="2FA Code"><br>
+        <button onclick="verify2FA()">Verify 2FA</button>
+        <p id="error" style="color: red; display: none;">Incorrect 2FA code!</p>
+    </div>
+    
+    <!-- Nội dung Netflix Account Share, sẽ ẩn cho đến khi đăng nhập -->
+    <div class="content-container hidden" id="content-box">
+        <h2>Netflix Account Share</h2>
+        <table>
+            <tr>
+                <th>Account</th>
+                <th>Password</th>
+            </tr>
+            <tr>
+                <td>lifexyz2468@gmail.com <button class="copy-btn" onclick="copyText('lifexyz2468@gmail.com')">📋</button></td>
+                <td>25542409 <button class="copy-btn" onclick="copyText('25542409')">📋</button></td>
+            </tr>
+            <tr>
+                <th>Profile</th>
+                <th>PIN</th>
+            </tr>
+            <tr>
+                <td>Profile 1</td>
+                <td>1111 <button class="copy-btn" onclick="copyText('1111')">📋</button></td>
+            </tr>
+            <tr>
+                <td>Profile 2</td>
+                <td>0202 <button class="copy-btn" onclick="copyText('0202')">📋</button></td>
+            </tr>
+            <tr>
+                <td>Profile 3</td>
+                <td>1357 <button class="copy-btn" onclick="copyText('1357')">📋</button></td>
+            </tr>
+            <tr>
+                <td>Profile 4</td>
+                <td>4488 <button class="copy-btn" onclick="copyText('4488')">📋</button></td>
+            </tr>
+            <tr>
+                <td>Profile 5</td>
+                <td>0055 <button class="copy-btn" onclick="copyText('0055')">📋</button></td>
+            </tr>
+        </table>
+        <button class="logout-button" onclick="logout()">Logout</button>
+    </div>
+    
+    <!-- Toast thông báo -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script>
+        // Chức năng đăng nhập
+        function verify2FA() {
+            const twofaCode = document.getElementById('twofaCode').value.trim();
+            const errorElement = document.getElementById('error');
+            
+            if (!twofaCode) {
+                errorElement.textContent = "Please enter a 2FA code.";
+                errorElement.style.display = 'block';
+                return;
             }
 
-            @keyframes slideIn {
-                0% {
-                    transform: translateY(-50px);
-                    opacity: 0;
+            // Gửi mã 2FA tới server để kiểm tra
+            fetch('http://localhost:3000/verify-2fa', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ code: twofaCode })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === '2FA code is valid') {
+                    showContent();  // Hiển thị nội dung khi mã 2FA đúng
+                } else {
+                    errorElement.textContent = "Incorrect 2FA code!";
+                    errorElement.style.display = 'block';
                 }
-                100% {
-                    transform: translateY(0);
-                    opacity: 1;
-                }
-            }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                errorElement.textContent = "An error occurred. Please try again.";
+                errorElement.style.display = 'block';
+            });
+        }
 
-            /* Ẩn phần content khi chưa đăng nhập */
-            .hidden {
-                display: none;
-            }
+        // Chức năng đăng xuất
+        function logout() {
+            localStorage.removeItem('loggedIn');
+            document.getElementById('content-box').classList.add('hidden');
+            document.getElementById('login-box').classList.remove('hidden');
+            document.body.style.background = 'url("https://i.imgur.com/7syXYAp.jpeg") no-repeat center center fixed';
+            document.body.style.backgroundSize = 'cover';
+        }
 
-            /* Resize the logout button */
-            .logout-button {
-                padding: 10px 20px;
-                font-size: 14px;
-                width: auto;
-                cursor: pointer;
-            }
+        // Hiển thị nội dung sau khi đăng nhập
+        function showContent() {
+            document.getElementById('login-box').classList.add('hidden');
+            document.getElementById('content-box').classList.remove('hidden');
+            document.body.style.background = 'url("https://i.imgur.com/bhiplWD.jpeg") no-repeat center center fixed';
+            document.body.style.backgroundSize = 'cover';
+        }
 
-            /* Style for the eye icon */
-            .eye-icon {
-                cursor: pointer;
-                position: absolute;
-                right: 35px;  /* Adjusted right position to avoid overlapping */
-                top: 50%;  /* Vertically center the icon */
-                transform: translateY(-50%);  /* Fine-tune centering */
-                color: white;
-            }
+        // Chức năng sao chép
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast(`Copied: ${text}`);
+            });
+        }
 
-            /* New CSS for the copy button */
-            .copy-btn {
-                padding: 5px;
-                font-size: 20px;
-                background: none;
-                border: none;
-                color: #ff7f50;
-                cursor: pointer;
-                transition: transform 0.3s ease;
-            }
-
-            .copy-btn:hover {
-                transform: scale(1.2);  /* Tăng kích thước biểu tượng khi hover */
-            }
-
-        </style>
-    </head>
-    <body>
-        <!-- Khung đăng nhập -->
-        <div class="login-container" id="login-box">
-            <img src="https://i.pinimg.com/originals/d2/a8/47/d2a84760f77dfe1ab7903615f4523a71.gif" alt="User Avatar" class="user-image"> <!-- Ảnh người dùng -->
-            <h2>Enter 2FA Code:</h2>
-            <input type="text" id="twofaCode" placeholder="2FA Code"><br>
-            <button onclick="verify2FA()">Verify 2FA</button>
-            <p id="error" style="color: red; display: none;">Incorrect 2FA code!</p>
-        </div>
-        
-        <!-- Nội dung Netflix Account Share, sẽ ẩn cho đến khi đăng nhập -->
-        <div class="content-container hidden" id="content-box">
-            <h2>Netflix Account Share</h2>
-            <table>
-                <tr>
-                    <th>Account</th>
-                    <th>Password</th>
-                </tr>
-                <tr>
-                    <td>lifexyz2468@gmail.com <button class="copy-btn" onclick="copyText('lifexyz2468@gmail.com')">📋</button></td>
-                    <td>25542409 <button class="copy-btn" onclick="copyText('25542409')">📋</button></td>
-                </tr>
-                <tr>
-                    <th>Profile</th>
-                    <th>PIN</th>
-                </tr>
-                <tr>
-                    <td>Profile 1</td>
-                    <td>1111 <button class="copy-btn" onclick="copyText('1111')">📋</button></td>
-                </tr>
-                <tr>
-                    <td>Profile 2</td>
-                    <td>0202 <button class="copy-btn" onclick="copyText('0202')">📋</button></td>
-                </tr>
-                <tr>
-                    <td>Profile 3</td>
-                    <td>1357 <button class="copy-btn" onclick="copyText('1357')">📋</button></td>
-                </tr>
-                <tr>
-                    <td>Profile 4</td>
-                    <td>4488 <button class="copy-btn" onclick="copyText('4488')">📋</button></td>
-                </tr>
-                <tr>
-                    <td>Profile 5</td>
-                    <td>0055 <button class="copy-btn" onclick="copyText('0055')">📋</button></td>
-                </tr>
-            </table>
-            <button class="logout-button" onclick="logout()">Logout</button>
-        </div>
-        
-        <!-- Toast thông báo -->
-        <div class="toast-container" id="toast-container"></div>
-
-        <script>
-            // Chức năng đăng nhập
-            function verify2FA() {
-                const twofaCode = document.getElementById('twofaCode').value.trim();
-
-                // Gửi yêu cầu xác thực mã 2FA tới server
-                fetch('https://your-server-url.com/verify-2fa', {  // Cập nhật URL server của bạn
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ code: twofaCode })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.message === '2FA code is valid') {
-                        localStorage.setItem('loggedIn', 'true');
-                        showContent();
-                    } else {
-                        document.getElementById('error').style.display = 'block';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-            }
-
-            // Chức năng đăng xuất
-            function logout() {
-                localStorage.removeItem('loggedIn');
-                document.getElementById('content-box').classList.add('hidden');
-                document.getElementById('login-box').classList.remove('hidden');
-                document.body.style.background = 'url("https://i.imgur.com/7syXYAp.jpeg") no-repeat center center fixed';
-                document.body.style.backgroundSize = 'cover';
-            }
-
-            // Hiển thị nội dung sau khi đăng nhập
-            function showContent() {
-                document.getElementById('login-box').classList.add('hidden');
-                document.getElementById('content-box').classList.remove('hidden');
-                document.body.style.background = 'url("https://i.imgur.com/bhiplWD.jpeg") no-repeat center center fixed';
-                document.body.style.backgroundSize = 'cover';
-            }
-
-            // Chức năng sao chép
-            function copyText(text) {
-                navigator.clipboard.writeText(text).then(() => {
-                    showToast(`Copied: ${text}`);
-                });
-            }
-
-            // Hiển thị thông báo Toast
-            function showToast(message) {
-                const toastContainer = document.getElementById('toast-container');
-                const toast = document.createElement('div');
-                toast.className = 'toast show';
-                toast.textContent = message;
-                toastContainer.prepend(toast);
-                setTimeout(() => {
-                    toast.classList.remove('show');
-                    setTimeout(() => toast.remove(), 500);
-                }, 5000);
-            }
-        </script>
-    </body>
+        // Hiển thị thông báo Toast
+        function showToast(message) {
+            const toastContainer = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast show';
+            toast.textContent = message;
+            toastContainer.prepend(toast);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 500);
+            }, 5000);
+        }
+    </script>
+</body>
 </html>
