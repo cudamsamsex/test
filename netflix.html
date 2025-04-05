@@ -1,221 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Netflix Account Share</title>
-  <link rel="icon" href="favicon.ico" type="image/x-icon" />
-  <style>
-    body {
-      font-family: 'Roboto', sans-serif;
-      background: url('https://i.imgur.com/7syXYAp.jpeg') no-repeat center center fixed;
-      background-size: cover;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color: white;
-      overflow: hidden;
-    }
-
-    .login-container, .content-container {
-      background: rgba(0, 0, 0, 0.6);
-      padding: 40px;
-      border-radius: 15px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
-      text-align: center;
-      color: white;
-    }
-
-    .login-container {
-      width: 400px;
-      backdrop-filter: blur(5px);
-    }
-
-    .content-container {
-      width: 850px;
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .user-image {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      margin-bottom: 20px;
-      box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
-    }
-
-    h2 {
-      color: #ff7f50;
-      margin-bottom: 20px;
-      font-size: 28px;
-    }
-
-    input, button {
-      margin: 10px 0;
-      padding: 15px;
-      border: none;
-      border-radius: 10px;
-      width: 80%;
-      font-size: 16px;
-    }
-
-    input {
-      background: rgba(255, 255, 255, 0.2);
-      color: white;
-      border: 2px solid #ff7f50;
-    }
-
-    button {
-      background: #ff7f50;
-      color: white;
-      cursor: pointer;
-      border: 2px solid #ff7f50;
-      font-weight: bold;
-    }
-
-    .logout-button {
-      padding: 10px 20px;
-      font-size: 14px;
-      margin-top: 20px;
-    }
-
-    .toast-container {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-    }
-
-    .toast {
-      background: rgba(255, 99, 71, 0.9);
-      color: white;
-      padding: 12px 18px;
-      border-radius: 12px;
-      margin-bottom: 10px;
-      opacity: 0;
-      transform: translateY(-10px);
-      transition: opacity 0.3s, transform 0.3s;
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Netflix Account Share</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <style>
+        /* Các style của bạn */
+    </style>
 </head>
 <body>
-  <!-- LOGIN BOX -->
-  <div class="login-container" id="login-box">
-    <img src="https://i.pinimg.com/originals/d2/a8/47/d2a84760f77dfe1ab7903615f4523a71.gif" alt="User Avatar" class="user-image" />
-    <h2>Login Account</h2>
-    <input type="text" id="username" placeholder="Username" />
-    <input type="password" id="password" placeholder="Password" />
-    <button onclick="login()">Login</button>
-  </div>
+    <!-- Khung đăng nhập -->
+    <div class="login-container" id="login-box">
+        <h2>Login Account:</h2>
+        <input type="text" id="username" placeholder="Username"><br>
+        <input type="password" id="password" placeholder="Password"><br>
+        <button onclick="login()">Login</button>
+        <p id="error" style="color: red; display: none;">Incorrect username or password!</p>
+    </div>
 
-  <!-- CONTENT BOX (ẩn ban đầu) -->
-  <div class="content-container" id="content-box"></div>
-
-  <!-- Toast Notification -->
-  <div class="toast-container" id="toast-container"></div>
-
-  <script>
-    document.addEventListener("DOMContentLoaded", async () => {
-      if (localStorage.getItem("loggedIn") === "true") {
-        showContent();
-        await loadNetflixData();
-      }
-    });
-
-    async function login() {
-      const user = document.getElementById("username").value.trim();
-      const pass = document.getElementById("password").value.trim();
-
-      try {
-        const res = await fetch("https://netflix-api.vercel.app/api/check-login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username: user, password: pass }),
-        });
-
-        const result = await res.json();
-
-        if (result.success) {
-          localStorage.setItem("loggedIn", "true");
-          showContent();
-          await loadNetflixData();
-        } else {
-          showToast("❌ Sai tài khoản hoặc mật khẩu");
-        }
-      } catch (err) {
-        showToast("⚠️ Lỗi kết nối máy chủ");
-        console.error(err);
-      }
-    }
-
-    async function loadNetflixData() {
-      try {
-        const res = await fetch("https://netflix-api.vercel.app/api/get-account");
-        const data = await res.json();
-        renderTable(data);
-      } catch (err) {
-        showToast("⚠️ Không thể tải dữ liệu Netflix");
-      }
-    }
-
-    function renderTable(data) {
-      const box = document.getElementById("content-box");
-      box.innerHTML = `
+    <!-- Nội dung Netflix Account Share -->
+    <div class="content-container hidden" id="content-box">
         <h2>Netflix Account Share</h2>
         <table>
-          <tr><th>Account</th><th>Password</th></tr>
-          <tr>
-            <td>${data.email} <button onclick="copyText('${data.email}')">📋</button></td>
-            <td>${data.password} <button onclick="copyText('${data.password}')">📋</button></td>
-          </tr>
-          <tr><th>Profile</th><th>PIN</th></tr>
-          ${data.profiles.map(p => `
             <tr>
-              <td>${p.name}</td>
-              <td>${p.pin} <button onclick="copyText('${p.pin}')">📋</button></td>
-            </tr>`).join("")}
+                <th>Account</th>
+                <th>Password</th>
+            </tr>
+            <tr>
+                <td id="account-email"></td>
+                <td id="account-password"></td>
+            </tr>
+            <tr>
+                <th>Profile</th>
+                <th>PIN</th>
+            </tr>
+            <tbody id="profiles-table">
+                <!-- Profile rows will be added dynamically -->
+            </tbody>
         </table>
-        <button class="logout-button" onclick="logout()">Logout</button>
-      `;
-    }
+        <button onclick="logout()">Logout</button>
+    </div>
 
-    function showContent() {
-      document.getElementById("login-box").style.display = "none";
-      document.getElementById("content-box").style.display = "flex";
-      document.body.style.background = 'url("https://i.imgur.com/bhiplWD.jpeg") no-repeat center center fixed';
-      document.body.style.backgroundSize = "cover";
-    }
+    <script>
+        async function login() {
+            const user = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value.trim();
 
-    function logout() {
-      localStorage.removeItem("loggedIn");
-      location.reload();
-    }
+            // Gửi yêu cầu POST tới API Vercel
+            const res = await fetch("/api/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ username: user, password: pass }),
+            });
 
-    function copyText(text) {
-      navigator.clipboard.writeText(text).then(() => {
-        showToast(`✅ Copied: ${text}`);
-      });
-    }
+            const data = await res.json();
 
-    function showToast(message) {
-      const container = document.getElementById("toast-container");
-      const toast = document.createElement("div");
-      toast.className = "toast show";
-      toast.textContent = message;
-      container.prepend(toast);
-      setTimeout(() => {
-        toast.classList.remove("show");
-        setTimeout(() => toast.remove(), 300), 3000;
-      }, 3000);
-    }
-  </script>
+            if (res.status === 200) {
+                // Lưu thông tin vào localStorage
+                localStorage.setItem('loggedIn', 'true');
+                localStorage.setItem('netflixAccount', JSON.stringify(data));
+                showContent();
+            } else {
+                document.getElementById('error').style.display = 'block';
+            }
+        }
+
+        function showContent() {
+            document.getElementById('login-box').classList.add('hidden');
+            document.getElementById('content-box').classList.remove('hidden');
+            
+            const account = JSON.parse(localStorage.getItem('netflixAccount'));
+            document.getElementById('account-email').textContent = account.username;
+            document.getElementById('account-password').textContent = account.password;
+
+            const profilesTable = document.getElementById('profiles-table');
+            account.profiles.forEach(profile => {
+                const row = profilesTable.insertRow();
+                row.insertCell(0).textContent = profile.name;
+                row.insertCell(1).textContent = profile.password;
+            });
+        }
+
+        function logout() {
+            localStorage.removeItem('loggedIn');
+            document.getElementById('content-box').classList.add('hidden');
+            document.getElementById('login-box').classList.remove('hidden');
+        }
+    </script>
 </body>
 </html>
