@@ -1,10 +1,10 @@
 import { totp } from 'otplib';
 
 export default function handler(req, res) {
-  const { token } = req.query;
+  const { token } = req.query;  // Lấy token từ query params
 
   // 🔐 Secret key (dùng với Google Authenticator). Bạn có thể thay bằng cái bạn tạo trên 2fa.city
-  const secret = 'KVKFKRCPNZQUYMLXOVYDSQKJKZDTSRLD';
+  const secret = 'KVKFKRCPNZQUYMLXOVYDSQKJKZDTSRLD';  // Thay bằng mã secret của bạn
 
   // ❌ Nếu không gửi token thì trả lỗi
   if (!token) {
@@ -12,7 +12,7 @@ export default function handler(req, res) {
   }
 
   // ✅ Kiểm tra mã có hợp lệ không
-  const isValid = totp.check(token, secret);
+  const isValid = totp.check(token, secret);  // Kiểm tra mã OTP
 
   // Trả kết quả
   if (isValid) {
