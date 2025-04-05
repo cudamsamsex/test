@@ -230,16 +230,26 @@
         <script>
             // Chức năng đăng nhập
             function verify2FA() {
-                const twofaCode = document.getElementById('twofaCode').value.trim();
-                
-                // Kiểm tra mã 2FA nhập vào
-                if (twofaCode === '123456') { // Thay thế với mã 2FA thực tế
-                    localStorage.setItem('loggedIn', 'true');
-                    showContent(); // Hiển thị nội dung sau khi đăng nhập
-                } else {
-                    document.getElementById('error').style.display = 'block'; // Hiển thị thông báo lỗi
-                }
-            }
+    const twofaCode = document.getElementById('twofaCode').value.trim();  // Lấy mã người dùng nhập vào
+    fetch('/verify-2fa', {  // Gửi mã tới server để kiểm tra
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ code: twofaCode })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {  // Nếu mã đúng, cho phép đăng nhập
+            localStorage.setItem('loggedIn', 'true');
+            showContent();
+        } else {
+            document.getElementById('error').style.display = 'block';  // Hiển thị lỗi nếu mã không đúng
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
         
             // Chức năng đăng xuất
             function logout() {
