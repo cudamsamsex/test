@@ -1,10 +1,9 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Netflix Account Share</title>
-        <!-- Thêm favicon -->
         <link rel="icon" href="favicon.ico" type="image/x-icon">
         <style>
             /* Your existing styles */
@@ -44,6 +43,19 @@
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
+            }
+
+            .user-image {
+                width: 120px;
+                height: 120px;
+                border-radius: 50%;
+                margin-bottom: 20px;
+                box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+                transition: transform 0.3s ease;
+            }
+
+            .user-image:hover {
+                transform: scale(1.1);
             }
 
             h2 {
@@ -127,6 +139,14 @@
                 display: none;
             }
 
+            /* Resize the logout button */
+            .logout-button {
+                padding: 10px 20px;
+                font-size: 14px;
+                width: auto;
+                cursor: pointer;
+            }
+
             /* Style for the eye icon */
             .eye-icon {
                 cursor: pointer;
@@ -157,10 +177,10 @@
     <body>
         <!-- Khung đăng nhập -->
         <div class="login-container" id="login-box">
-            <img src="https://i.pinimg.com/originals/d2/a8/47/d2a84760f77dfe1ab7903615f4523a71.gif" alt="User Avatar" class="user-image">
+            <img src="https://i.pinimg.com/originals/d2/a8/47/d2a84760f77dfe1ab7903615f4523a71.gif" alt="User Avatar" class="user-image"> <!-- Ảnh người dùng -->
             <h2>Enter 2FA Code:</h2>
-            <input type="text" id="token" placeholder="Enter 6-digit code"><br>
-            <button onclick="login()">Login</button>
+            <input type="text" id="twofaCode" placeholder="2FA Code"><br>
+            <button onclick="verify2FA()">Verify 2FA</button>
             <p id="error" style="color: red; display: none;">Incorrect 2FA code!</p>
         </div>
         
@@ -203,40 +223,23 @@
             </table>
             <button class="logout-button" onclick="logout()">Logout</button>
         </div>
-
+        
+        <!-- Toast thông báo -->
         <div class="toast-container" id="toast-container"></div>
 
         <script>
-            function login() {
-                const token = document.getElementById('token').value.trim();
-                if (token === "") {
-                    alert("Please enter a 2FA code!");
-                    return;
+            // Chức năng đăng nhập
+            function verify2FA() {
+                const twofaCode = document.getElementById('twofaCode').value.trim();
+                if (twofaCode === '123456') { // Thay thế với mã 2FA thực tế
+                    localStorage.setItem('loggedIn', 'true');
+                    showContent();
+                } else {
+                    document.getElementById('error').style.display = 'block';
                 }
-
-                // Gửi mã 2FA đến API
-                fetch(`/api/authenticate?token=${token}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            localStorage.setItem('loggedIn', 'true');
-                            showContent();  // Hiển thị nội dung Netflix sau khi đăng nhập
-                        } else {
-                            document.getElementById('error').style.display = 'block';
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Error:", error);
-                    });
             }
 
-            function showContent() {
-                document.getElementById('login-box').classList.add('hidden');
-                document.getElementById('content-box').classList.remove('hidden');
-                document.body.style.background = 'url("https://i.imgur.com/bhiplWD.jpeg") no-repeat center center fixed';
-                document.body.style.backgroundSize = 'cover';
-            }
-
+            // Chức năng đăng xuất
             function logout() {
                 localStorage.removeItem('loggedIn');
                 document.getElementById('content-box').classList.add('hidden');
@@ -245,32 +248,32 @@
                 document.body.style.backgroundSize = 'cover';
             }
 
+            // Hiển thị nội dung sau khi đăng nhập
+            function showContent() {
+                document.getElementById('login-box').classList.add('hidden');
+                document.getElementById('content-box').classList.remove('hidden');
+                document.body.style.background = 'url("https://i.imgur.com/bhiplWD.jpeg") no-repeat center center fixed';
+                document.body.style.backgroundSize = 'cover';
+            }
+
+            // Chức năng sao chép
             function copyText(text) {
                 navigator.clipboard.writeText(text).then(() => {
                     showToast(`Copied: ${text}`);
-                }).catch(err => {
-                    console.error('Error copying text: ', err);
                 });
             }
 
+            // Hiển thị thông báo Toast
             function showToast(message) {
+                const toastContainer = document.getElementById('toast-container');
                 const toast = document.createElement('div');
-                toast.classList.add('toast');
+                toast.className = 'toast show';
                 toast.textContent = message;
-                document.getElementById('toast-container').appendChild(toast);
-                setTimeout(() => {
-                    toast.classList.add('show');
-                }, 100);
+                toastContainer.prepend(toast);
                 setTimeout(() => {
                     toast.classList.remove('show');
-                    setTimeout(() => toast.remove(), 300);
-                }, 3000);
-            }
-
-            window.onload = () => {
-                if (localStorage.getItem('loggedIn') === 'true') {
-                    showContent();
-                }
+                    setTimeout(() => toast.remove(), 500);
+                }, 5000);
             }
         </script>
     </body>
