@@ -1,0 +1,8 @@
+{
+  "functions": {
+    "api/get-account.js": {
+      "memory": 128,
+      "maxDuration": 10
+    }
+  }
+}
