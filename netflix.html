@@ -1,260 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Netflix Account Share</title>
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <style>
-        /* Your existing styles */
-        body {
-            font-family: 'Roboto', sans-serif;
-            background: url('https://i.imgur.com/7syXYAp.jpeg') no-repeat center center fixed;
-            background-size: cover;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            overflow: hidden;
-            transition: background 0.5s ease;
-        }
-
-        .login-container, .content-container {
-            background: rgba(0, 0, 0, 0.6);
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
-            text-align: center;
-            color: white;
-            transform: translateY(-50px);
-            animation: slideIn 1s forwards;
-        }
-
-        .login-container { 
-            width: 400px;
-            backdrop-filter: blur(5px);
-        }
-
-        .content-container {
-            width: 850px;
-            padding: 40px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .user-image {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            margin-bottom: 20px;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
-            transition: transform 0.3s ease;
-        }
-
-        .user-image:hover {
-            transform: scale(1.1);
-        }
-
-        h2 {
-            font-family: 'Comic Sans MS', cursive, sans-serif;
-            color: #ff7f50;
-            margin-bottom: 20px;
-            font-size: 28px;
-            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
-        }
-
-        input, button {
-            margin: 10px 0;
-            padding: 15px;
-            border: none;
-            border-radius: 10px;
-            width: 80%;
-            font-size: 16px;
-            transition: background-color 0.3s;
-        }
-
-        input {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 2px solid #ff7f50;
-        }
-
-        input:focus {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        button {
-            background: #ff7f50;
-            color: white;
-            cursor: pointer;
-            border: 2px solid #ff7f50;
-            font-weight: bold;
-        }
-
-        button:hover {
-            background: #ff6347;
-            border-color: #ff6347;
-        }
-
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .toast {
-            background: rgba(255, 99, 71, 0.9);
-            color: white;
-            padding: 12px 18px;
-            border-radius: 12px;
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: opacity 0.3s, transform 0.3s;
-        }
-
-        .toast.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        @keyframes slideIn {
-            0% {
-                transform: translateY(-50px);
-                opacity: 0;
-            }
-            100% {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .logout-button {
-            padding: 10px 20px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        .eye-icon {
-            cursor: pointer;
-            position: absolute;
-            right: 35px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: white;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Netflix Account Share</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #111;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+    .box {
+      background: #222;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
+    }
+    input {
+      padding: 10px;
+      width: 80%;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      background: #e50914;
+      border: none;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .account-box {
+      margin-top: 20px;
+      background: #333;
+      padding: 15px;
+      border-radius: 10px;
+      display: none;
+    }
+  </style>
 </head>
 <body>
-    <!-- Login Box -->
-    <div class="login-container" id="login-box">
-        <img src="https://i.pinimg.com/originals/d2/a8/47/d2a84760f77dfe1ab7903615f4523a71.gif" alt="User Avatar" class="user-image">
-        <h2>Login Account:</h2>
-        <input type="text" id="username" placeholder="Username"><br>
-        <div style="position: relative;">
-            <input type="password" id="password" placeholder="Password"><br>
-            <span class="eye-icon" onclick="togglePasswordVisibility()">👁️</span>
-        </div>
-        <button onclick="login()">Login</button>
-        <p id="error" style="color: red; display: none;">Incorrect username or password!</p>
-    </div>
+  <div class="box">
+    <h2>Enter Access Key</h2>
+    <input type="password" id="keyInput" placeholder="Enter key (e.g. Na123)" />
+    <br>
+    <button onclick="submitKey()">Unlock</button>
+    <p id="errorMsg" style="color: red; display: none;">Incorrect key. Please try again.</p>
 
-    <!-- Netflix Account Content -->
-    <div class="content-container hidden" id="content-box">
-        <h2>Netflix Account Share</h2>
-        <table>
-            <tr>
-                <th>Account</th>
-                <th>Password</th>
-            </tr>
-            <tr>
-                <td id="account-email">-</td>
-                <td id="account-password">-</td>
-            </tr>
-            <tr>
-                <th>Profile</th>
-                <th>PIN</th>
-            </tr>
-            <tbody id="profiles-table">
-                <!-- Profile rows will be added dynamically -->
-            </tbody>
-        </table>
-        <button class="logout-button" onclick="logout()">Logout</button>
-    </div>
+    <div id="accountBox" class="account-box"></div>
+  </div>
 
-    <!-- Toast Notifications -->
-    <div class="toast-container" id="toast-container"></div>
+  <script>
+    async function submitKey() {
+      const key = document.getElementById('keyInput').value.trim();
+      const res = await fetch('https://your-api.vercel.app/api/check?key=' + key);
+      const data = await res.json();
 
-    <script>
-        function togglePasswordVisibility() {
-            const passwordField = document.getElementById('password');
-            const passwordFieldType = passwordField.type;
-            passwordField.type = passwordFieldType === 'password' ? 'text' : 'password';
-        }
-
-        document.addEventListener("DOMContentLoaded", function() {
-            if (localStorage.getItem('loggedIn') !== 'true') {
-                document.getElementById('content-box').classList.add('hidden');
-                document.getElementById('login-box').classList.remove('hidden');
-            } else {
-                showContent();
-            }
-        });
-
-        async function login() {
-            const user = document.getElementById('username').value.trim();
-            const pass = document.getElementById('password').value.trim();
-
-            // Call backend API for login
-            const res = await fetch("/api/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ username: user, password: pass }),
-            });
-
-            const data = await res.json();
-
-            if (res.status === 200) {
-                localStorage.setItem('loggedIn', 'true');
-                localStorage.setItem('netflixAccount', JSON.stringify(data));
-                showContent();
-            } else {
-                document.getElementById('error').style.display = 'block';
-            }
-        }
-
-        function showContent() {
-            document.getElementById('login-box').classList.add('hidden');
-            document.getElementById('content-box').classList.remove('hidden');
-            
-            const account = JSON.parse(localStorage.getItem('netflixAccount'));
-            document.getElementById('account-email').textContent = account.username;
-            document.getElementById('account-password').textContent = account.password;
-
-            const profilesTable = document.getElementById('profiles-table');
-            account.profiles.forEach(profile => {
-                const row = profilesTable.insertRow();
-                row.insertCell(0).textContent = profile.name;
-                row.insertCell(1).textContent = profile.password;
-            });
-        }
-
-        function logout() {
-            localStorage.removeItem('loggedIn');
-            document.getElementById('content-box').classList.add('hidden');
-            document.getElementById('login-box').classList.remove('hidden');
-        }
-    </script>
+      if (data.success) {
+        document.getElementById('errorMsg').style.display = 'none';
+        document.getElementById('accountBox').style.display = 'block';
+        document.getElementById('accountBox').innerHTML = data.content;
+      } else {
+        document.getElementById('errorMsg').style.display = 'block';
+        document.getElementById('accountBox').style.display = 'none';
+      }
+    }
+  </script>
 </body>
 </html>
