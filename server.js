@@ -1,39 +1,27 @@
+// server.js
+
 const express = require('express');
-const bodyParser = require('body-parser');
-const speakeasy = require('speakeasy');
+const next = require('next');
 
-const app = express();
-const port = process.env.PORT || 5000;
+const dev = process.env.NODE_ENV !== 'production';
+const app = next({ dev });
+const handle = app.getRequestHandler();
 
-// Middleware để parse JSON
-app.use(bodyParser.json());
+app.prepare().then(() => {
+  const server = express();
 
-// Mã 2FA lưu trữ trong hệ thống
-const secret = speakeasy.generateSecret({ length: 20 });
+  // API route
+  server.all('/api/*', (req, res) => {
+    return handle(req, res);
+  });
 
-// Endpoint để xác thực mã 2FA
-app.post('/verify-2fa', (req, res) => {
-    const { code } = req.body;
+  // Serve the static html (netflix.html)
+  server.get('*', (req, res) => {
+    return handle(req, res);
+  });
 
-    if (!code) {
-        return res.status(400).json({ message: 'Code is required' });
-    }
-
-    // Kiểm tra mã 2FA gửi từ client
-    const verified = speakeasy.totp.verify({
-        secret: secret.base32,
-        encoding: 'base32',
-        token: code
-    });
-
-    if (verified) {
-        return res.status(200).json({ message: '2FA code is valid' });
-    } else {
-        return res.status(400).json({ message: 'Invalid 2FA code' });
-    }
-});
-
-// Khởi chạy server
-app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+  server.listen(3000, (err) => {
+    if (err) throw err;
+    console.log('> Ready on http://localhost:3000');
+  });
 });
