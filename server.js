@@ -2,22 +2,23 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 
-// Cấu hình CORS
-const corsOptions = {
-    origin: ['https://your-netlify-site.netlify.app', 'https://your-github-pages-site.github.io'], // Thêm các domain frontend của bạn ở đây
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type'],
-};
+// Cấu hình CORS để chỉ cho phép GitHub Pages của bạn
+app.use(cors({
+  origin: 'https://cudamsamsex.github.io',  // Cho phép yêu cầu từ GitHub Pages
+  methods: ['GET', 'POST'],
+}));
 
-app.use(cors(corsOptions)); // Sử dụng CORS với các tùy chọn trên
-
-// Các route của bạn (ví dụ: đăng nhập)
-app.post('/api/login', (req, res) => {
-    // Xử lý đăng nhập của bạn tại đây
-    res.json({ message: 'Login successful' });
+// Đặt endpoint của bạn
+app.post('/api/check-login', (req, res) => {
+  const { username, password } = req.body;
+  if (username === 'nadeptrai' && password === 'nadeptrai') {
+    res.json({ success: true });
+  } else {
+    res.json({ success: false });
+  }
 });
 
-// Lắng nghe trên cổng
+// Chạy server trên port 3000
 app.listen(3000, () => {
-    console.log('Server is running on port 3000');
+  console.log('Server is running on port 3000');
 });
