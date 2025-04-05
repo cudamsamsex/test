@@ -1,29 +1,23 @@
-// netlify/functions/authenticate.js
-const { totp } = require('otplib');
+import { totp } from 'otplib';
 
-exports.handler = async (event, context) => {
-  const { token } = event.queryStringParameters;
+export default function handler(req, res) {
+  const { token } = req.query;
 
-  const secret = 'KVKFKRCPNZQUYMLXOVYDSQKJKZDTSRLD'; // Secret key của bạn
+  // Mã secret (mã 2FA) bạn tạo trong Google Authenticator hoặc 2fa.live
+  const secret = 'KVKFKRCPNZQUYMLXOVYDSQKJKZDTSRLD';  // Thay bằng key của bạn
 
+  // Kiểm tra nếu không có mã 2FA
   if (!token) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ error: 'Missing token' }),
-    };
+    return res.status(400).json({ error: 'Missing token' });
   }
 
+  // Kiểm tra tính hợp lệ của mã 2FA
   const isValid = totp.check(token, secret);
 
+  // Trả kết quả xác thực
   if (isValid) {
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ success: true }),
-    };
+    return res.status(200).json({ success: true });
   } else {
-    return {
-      statusCode: 401,
-      body: JSON.stringify({ success: false }),
-    };
+    return res.status(401).json({ success: false });
   }
-};
+}
