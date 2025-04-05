@@ -228,19 +228,16 @@
         <div class="toast-container" id="toast-container"></div>
 
         <script>
-            // Chức năng đăng nhập (Kiểm tra mã 2FA với API)
-            async function verify2FA() {
+            // Chức năng đăng nhập
+            function verify2FA() {
                 const twofaCode = document.getElementById('twofaCode').value.trim();
-        
-                // Gọi API xác minh mã 2FA
-                const response = await fetch(`/api/authenticate?token=${twofaCode}`);
-                const data = await response.json();
-        
-                if (data.success) {
+                
+                // Kiểm tra mã 2FA nhập vào
+                if (twofaCode === '123456') { // Thay thế với mã 2FA thực tế
                     localStorage.setItem('loggedIn', 'true');
-                    showContent();
+                    showContent(); // Hiển thị nội dung sau khi đăng nhập
                 } else {
-                    document.getElementById('error').style.display = 'block';
+                    document.getElementById('error').style.display = 'block'; // Hiển thị thông báo lỗi
                 }
             }
         
