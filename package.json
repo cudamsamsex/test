@@ -1,0 +1,13 @@
+{
+  "name": "netflix-share-api",
+  "version": "1.0.0",
+  "main": "api/authenticate.js",
+  "scripts": {
+    "start": "node api/authenticate.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "body-parser": "^1.19.0",
+    "speakeasy": "^2.0.0"
+  }
+}
