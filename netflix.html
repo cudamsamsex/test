@@ -1,87 +1,271 @@
-<script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Netflix Account Share</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: url('https://i.imgur.com/7syXYAp.jpeg') no-repeat center center fixed;
+      background-size: cover;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      overflow: hidden;
+    }
+
+    .login-container, .content-container {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+      text-align: center;
+      color: white;
+      animation: slideIn 1s forwards;
+    }
+
+    .login-container {
+      width: 400px;
+      backdrop-filter: blur(5px);
+    }
+
+    .content-container {
+      width: 850px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h2 {
+      color: #ff7f50;
+      margin-bottom: 20px;
+      font-size: 28px;
+      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+    }
+
+    input, button {
+      margin: 10px 0;
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      width: 80%;
+      font-size: 16px;
+    }
+
+    input {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 2px solid #ff7f50;
+    }
+
+    button {
+      background: #ff7f50;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background: #ff6347;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .logout-button {
+      padding: 10px 20px;
+      font-size: 14px;
+      margin-top: 20px;
+    }
+
+    .eye-icon {
+      cursor: pointer;
+      position: absolute;
+      right: 35px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: white;
+    }
+
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .toast {
+      background: rgba(255, 99, 71, 0.9);
+      color: white;
+      padding: 12px 18px;
+      border-radius: 12px;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: opacity 0.3s, transform 0.3s;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Table Styling */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      color: white;
+      font-size: 16px;
+      text-align: center;
+    }
+
+    th, td {
+      border: 1px solid rgba(255,255,255,0.4);
+      padding: 12px;
+    }
+
+    th {
+      background-color: rgba(255, 127, 80, 0.7);
+    }
+
+    td {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .copy-btn {
+      background: none;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      color: white;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Đăng nhập -->
+  <div class="login-container" id="login-box">
+    <img src="https://i.pinimg.com/originals/d2/a8/47/d2a84760f77dfe1ab7903615f4523a71.gif" alt="User" class="user-image" style="width:120px; border-radius:50%;" />
+    <h2>Login Account:</h2>
+    <input type="text" id="username" placeholder="Username"><br>
+    <div style="position: relative;">
+      <input type="password" id="password" placeholder="Password">
+      <span class="eye-icon" onclick="togglePasswordVisibility()">👁️</span>
+    </div>
+    <button onclick="login()">Login</button>
+    <p id="error" style="color: red; display: none;">Incorrect username or password!</p>
+  </div>
+
+  <!-- Nội dung tài khoản -->
+  <div class="content-container hidden" id="content-box"></div>
+
+  <!-- Toast -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script>
     async function login() {
-        const user = document.getElementById('username').value.trim();
-        const pass = document.getElementById('password').value.trim();
+      const user = document.getElementById('username').value.trim();
+      const pass = document.getElementById('password').value.trim();
 
-        const response = await fetch("https://netflix-api.vercel.app/api/get-account", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username: user, password: pass })
-        });
+      const response = await fetch("https://netflix-api.vercel.app/api/get-account", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: user, password: pass })
+      });
 
-        if (response.ok) {
-            const data = await response.json();
-            localStorage.setItem('loggedIn', 'true');
-            localStorage.setItem('accountData', JSON.stringify(data));
-            showContent(data);
-        } else {
-            document.getElementById('error').style.display = 'block';
-        }
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('loggedIn', 'true');
+        localStorage.setItem('accountData', JSON.stringify(data));
+        showContent(data);
+      } else {
+        document.getElementById('error').style.display = 'block';
+      }
     }
 
     function showContent(data) {
-        document.getElementById('login-box').classList.add('hidden');
-        document.getElementById('content-box').classList.remove('hidden');
-        document.body.style.background = 'url("https://i.imgur.com/bhiplWD.jpeg") no-repeat center center fixed';
-        document.body.style.backgroundSize = 'cover';
+      document.getElementById('login-box').classList.add('hidden');
+      document.getElementById('content-box').classList.remove('hidden');
+      document.body.style.background = 'url("https://i.imgur.com/bhiplWD.jpeg") no-repeat center center fixed';
+      document.body.style.backgroundSize = 'cover';
 
-        const contentBox = document.getElementById('content-box');
-        contentBox.innerHTML = `
-            <h2>Netflix Account Share</h2>
-            <table>
-                <tr><th>Account</th><th>Password</th></tr>
-                <tr>
-                    <td>${data.account} <button onclick="copyText('${data.account}')">📋</button></td>
-                    <td>${data.pass} <button onclick="copyText('${data.pass}')">📋</button></td>
-                </tr>
-                <tr><th>Profile</th><th>PIN</th></tr>
-                ${data.profiles.map(p => `
-                    <tr>
-                        <td>${p.name}</td>
-                        <td>${p.pin} <button onclick="copyText('${p.pin}')">📋</button></td>
-                    </tr>`).join('')}
-            </table>
-            <button class="logout-button" onclick="logout()">Logout</button>
-        `;
+      const contentBox = document.getElementById('content-box');
+      contentBox.innerHTML = `
+        <h2>Netflix Account Share</h2>
+        <table>
+          <tr><th>Account</th><th>Password</th></tr>
+          <tr>
+            <td>${data.account} <button onclick="copyText('${data.account}')">📋</button></td>
+            <td>${data.pass} <button onclick="copyText('${data.pass}')">📋</button></td>
+          </tr>
+          <tr><th>Profile</th><th>PIN</th></tr>
+          ${data.profiles.map(p => `
+            <tr>
+              <td>${p.name}</td>
+              <td>${p.pin} <button onclick="copyText('${p.pin}')">📋</button></td>
+            </tr>
+          `).join('')}
+        </table>
+        <button class="logout-button" onclick="logout()">Logout</button>
+      `;
     }
 
     function logout() {
-        localStorage.removeItem('loggedIn');
-        localStorage.removeItem('accountData');
-        document.getElementById('content-box').classList.add('hidden');
-        document.getElementById('login-box').classList.remove('hidden');
-        document.body.style.background = 'url("https://i.imgur.com/7syXYAp.jpeg") no-repeat center center fixed';
-        document.body.style.backgroundSize = 'cover';
+      localStorage.removeItem('loggedIn');
+      localStorage.removeItem('accountData');
+      document.getElementById('content-box').classList.add('hidden');
+      document.getElementById('login-box').classList.remove('hidden');
+      document.body.style.background = 'url("https://i.imgur.com/7syXYAp.jpeg") no-repeat center center fixed';
+      document.body.style.backgroundSize = 'cover';
     }
 
     function copyText(text) {
-        navigator.clipboard.writeText(text).then(() => {
-            showToast(`Copied: ${text}`);
-        });
+      navigator.clipboard.writeText(text).then(() => {
+        showToast(`Copied: ${text}`);
+      });
     }
 
     function showToast(message) {
-        const toastContainer = document.getElementById('toast-container');
-        const toast = document.createElement('div');
-        toast.className = 'toast show';
-        toast.textContent = message;
-        toastContainer.prepend(toast);
-        setTimeout(() => {
-            toast.classList.remove('show');
-            setTimeout(() => toast.remove(), 500);
-        }, 5000);
+      const toastContainer = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'toast show';
+      toast.textContent = message;
+      toastContainer.prepend(toast);
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 500);
+      }, 5000);
     }
 
-    document.addEventListener("DOMContentLoaded", function() {
-        if (localStorage.getItem('loggedIn') === 'true') {
-            const data = JSON.parse(localStorage.getItem('accountData'));
-            showContent(data);
-        }
+    document.addEventListener("DOMContentLoaded", function () {
+      if (localStorage.getItem('loggedIn') === 'true') {
+        const data = JSON.parse(localStorage.getItem('accountData'));
+        showContent(data);
+      }
     });
 
     function togglePasswordVisibility() {
-        const passwordField = document.getElementById('password');
-        const passwordFieldType = passwordField.type;
-        passwordField.type = passwordFieldType === 'password' ? 'text' : 'password';
+      const passwordField = document.getElementById('password');
+      passwordField.type = passwordField.type === 'password' ? 'text' : 'password';
     }
-</script>
+  </script>
+</body>
+</html>
