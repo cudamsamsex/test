@@ -228,77 +228,57 @@
     <div class="toast-container" id="toast-container"></div>
 
     <script>
-        // Chức năng đăng nhập
-        function verify2FA() {
-            const twofaCode = document.getElementById('twofaCode').value.trim();
-            const errorElement = document.getElementById('error');
-            
-            if (!twofaCode) {
-                errorElement.textContent = "Please enter a 2FA code.";
-                errorElement.style.display = 'block';
-                return;
-            }
+        <script>
+    // Chức năng xác thực 2FA
+    function verify2FA() {
+        const twofaCode = document.getElementById('twofaCode').value.trim();
 
-            // Gửi mã 2FA tới server để kiểm tra
-            fetch('http://localhost:3000/verify-2fa', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ code: twofaCode })
-            })
+        // Gửi yêu cầu đến API xác thực mã 2FA
+        fetch(`/api/authenticate?token=${twofaCode}`)
             .then(response => response.json())
             .then(data => {
-                if (data.message === '2FA code is valid') {
-                    showContent();  // Hiển thị nội dung khi mã 2FA đúng
+                if (data.success) {
+                    // Mã 2FA hợp lệ, thực hiện đăng nhập
+                    localStorage.setItem('loggedIn', 'true');
+                    showContent();
                 } else {
-                    errorElement.textContent = "Incorrect 2FA code!";
-                    errorElement.style.display = 'block';
+                    // Mã 2FA không hợp lệ
+                    document.getElementById('error').style.display = 'block';
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
-                errorElement.textContent = "An error occurred. Please try again.";
-                errorElement.style.display = 'block';
+                console.error('Error during 2FA verification:', error);
+                document.getElementById('error').style.display = 'block';
             });
-        }
+    }
 
-        // Chức năng đăng xuất
-        function logout() {
-            localStorage.removeItem('loggedIn');
-            document.getElementById('content-box').classList.add('hidden');
-            document.getElementById('login-box').classList.remove('hidden');
-            document.body.style.background = 'url("https://i.imgur.com/7syXYAp.jpeg") no-repeat center center fixed';
-            document.body.style.backgroundSize = 'cover';
-        }
+    // Hiển thị nội dung sau khi đăng nhập thành công
+    function showContent() {
+        document.getElementById('login-box').classList.add('hidden');
+        document.getElementById('content-box').classList.remove('hidden');
+        document.body.style.background = 'url("https://i.imgur.com/bhiplWD.jpeg") no-repeat center center fixed';
+        document.body.style.backgroundSize = 'cover';
+    }
 
-        // Hiển thị nội dung sau khi đăng nhập
-        function showContent() {
-            document.getElementById('login-box').classList.add('hidden');
-            document.getElementById('content-box').classList.remove('hidden');
-            document.body.style.background = 'url("https://i.imgur.com/bhiplWD.jpeg") no-repeat center center fixed';
-            document.body.style.backgroundSize = 'cover';
-        }
+    // Chức năng sao chép thông tin
+    function copyText(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            showToast(`Copied: ${text}`);
+        });
+    }
 
-        // Chức năng sao chép
-        function copyText(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                showToast(`Copied: ${text}`);
-            });
-        }
-
-        // Hiển thị thông báo Toast
-        function showToast(message) {
-            const toastContainer = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = 'toast show';
-            toast.textContent = message;
-            toastContainer.prepend(toast);
-            setTimeout(() => {
-                toast.classList.remove('show');
-                setTimeout(() => toast.remove(), 500);
-            }, 5000);
-        }
-    </script>
+    // Hiển thị thông báo Toast
+    function showToast(message) {
+        const toastContainer = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'toast show';
+        toast.textContent = message;
+        toastContainer.prepend(toast);
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 500);
+        }, 5000);
+    }
+</script>
 </body>
 </html>
